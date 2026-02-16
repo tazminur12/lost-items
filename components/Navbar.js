@@ -10,7 +10,6 @@ import {
   Bell, 
   User, 
   LogOut, 
-  Settings, 
   PlusCircle,
   FileText,
   Home
@@ -105,8 +104,8 @@ export default function Navbar() {
                     <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                       <User className="w-4 h-4" /> Profile
                     </Link>
-                    <Link href="/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Settings className="w-4 h-4" /> Settings
+                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                      <FileText className="w-4 h-4" /> Dashboard
                     </Link>
                     <button
                       onClick={() => signOut()}
@@ -186,9 +185,15 @@ export default function Navbar() {
                       <p className="text-xs text-gray-500">{session.user?.email}</p>
                     </div>
                   </div>
+                  <Link
+                    href="/dashboard"
+                    className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" /> Dashboard
+                  </Link>
                   <button
                     onClick={() => signOut()}
-                    className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                    className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 mt-2"
                   >
                     Sign out
                   </button>

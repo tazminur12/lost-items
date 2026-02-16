@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Item from "@/models/Item";
+import User from "@/models/User";
 import { getServerSession } from "next-auth/next";
 import { GET as authOptions } from "../auth/[...nextauth]/route";
 
@@ -32,6 +33,17 @@ export async function POST(req) {
 
     await connectDB();
 
+    // Resolve user id: sometimes session.user._id may not be present on server session
+    let userId = session.user?._id;
+    if (!userId && session.user?.email) {
+      const userRecord = await User.findOne({ email: session.user.email }).select("_id");
+      userId = userRecord?._id;
+    }
+
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized or user not found" }, { status: 401 });
+    }
+
     const newItem = new Item({
       title,
       description,
@@ -41,7 +53,7 @@ export async function POST(req) {
       date,
       imageUrl,
       contactInfo,
-      user: session.user._id, // Assuming session.user has _id
+      user: userId,
     });
 
     await newItem.save();
