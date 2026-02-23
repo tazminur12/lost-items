@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Shield, Upload, Loader2, MapPin, Calendar, Tag, ImageIcon } from "lucide-react";
@@ -9,6 +9,14 @@ import Swal from "sweetalert2";
 import Button from "@/components/Button";
 
 export default function ClaimItem() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" /><span className="text-gray-500">Loading...</span></div>}>
+      <ClaimItemContent />
+    </Suspense>
+  );
+}
+
+function ClaimItemContent() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get("id");
   const router = useRouter();
