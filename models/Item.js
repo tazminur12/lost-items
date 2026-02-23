@@ -45,6 +45,28 @@ const ItemSchema = new mongoose.Schema(
     contactInfo: {
       type: String,
     },
+    aiKeywords: {
+      type: [String],
+      default: [],
+    },
+    aiSummary: {
+      type: String,
+    },
+    approvalStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    rejectionReason: {
+      type: String,
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    approvedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

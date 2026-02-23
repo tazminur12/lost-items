@@ -13,9 +13,9 @@ export default function MyFoundPage() {
     async function load() {
       if (!session) return setLoading(false);
       try {
-        const res = await fetch('/api/items');
+        const res = await fetch('/api/items?mine=true');
         const data = await res.json();
-        const mine = data.filter(i => i.user?.email === session.user?.email && (i.type === 'Found' || i.type === 'found'));
+        const mine = data.filter(i => i.type === 'Found' || i.type === 'found');
         setItems(mine);
       } catch (err) {
         console.error(err);
@@ -57,11 +57,16 @@ export default function MyFoundPage() {
                   <p className="text-xs text-gray-500">{item.category} • {new Date(item.date).toLocaleDateString()}</p>
                   <p className="mt-2 text-sm text-gray-600">{item.description?.slice(0, 140)}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right space-y-2">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'Resolved' ? 'bg-green-100 text-green-800' : item.status === 'Claimed' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
                     {item.status || 'Pending'}
                   </span>
-                  <div className="mt-4">
+                  <div>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.approvalStatus === 'Approved' ? 'bg-green-100 text-green-800' : item.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {item.approvalStatus === 'Approved' ? 'Approved' : item.approvalStatus === 'Rejected' ? 'Rejected' : 'Awaiting Review'}
+                    </span>
+                  </div>
+                  <div>
                     <Link href={`/dashboard/items/${item._id}`} className="text-sm text-blue-600 hover:underline">View</Link>
                   </div>
                 </div>

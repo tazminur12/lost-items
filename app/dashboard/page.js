@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Package, Search, CheckCircle, Clock } from "lucide-react";
+import { Package, Search, CheckCircle, Clock, ShieldCheck, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -14,7 +14,9 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchItems() {
       try {
-        const res = await fetch("/api/items");
+        const isMod = role === "Moderator" || role === "Admin";
+        const url = isMod ? "/api/items?approval=all" : "/api/items";
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setItems(data);
@@ -29,7 +31,19 @@ export default function DashboardPage() {
     if (session) {
       fetchItems();
     }
-  }, [session]);
+  }, [session, role]);
+
+  const isMod = role === "Moderator" || role === "Admin";
+
+  const pendingApprovals = items.filter(
+    (item) => item.approvalStatus === "Pending"
+  ).length;
+  const approvedItems = items.filter(
+    (item) => item.approvalStatus === "Approved"
+  ).length;
+  const rejectedItems = items.filter(
+    (item) => item.approvalStatus === "Rejected"
+  ).length;
 
   const activeReports = items.filter(
     (item) => item.type === "Lost" && item.status === "Pending"
@@ -52,34 +66,69 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Active Reports"
-          value={activeReports}
-          icon={Package}
-          color="blue"
-          description="Items currently reported lost"
-        />
-        <StatCard
-          title="Potential Matches"
-          value={potentialMatches}
-          icon={Search}
-          color="purple"
-          description="Found items matching your criteria"
-        />
-        <StatCard
-          title="Resolved Cases"
-          value={resolvedCases}
-          icon={CheckCircle}
-          color="green"
-          description="Items successfully returned"
-        />
-        <StatCard
-          title="Pending Claims"
-          value={pendingClaims}
-          icon={Clock}
-          color="orange"
-          description="Claims awaiting verification"
-        />
+        {isMod ? (
+          <>
+            <StatCard
+              title="Pending Approvals"
+              value={pendingApprovals}
+              icon={Clock}
+              color="orange"
+              description="Items waiting for your review"
+            />
+            <StatCard
+              title="Approved Items"
+              value={approvedItems}
+              icon={ShieldCheck}
+              color="green"
+              description="Items approved and visible"
+            />
+            <StatCard
+              title="Rejected Items"
+              value={rejectedItems}
+              icon={XCircle}
+              color="red"
+              description="Items rejected by moderators"
+            />
+            <StatCard
+              title="Total Items"
+              value={items.length}
+              icon={Package}
+              color="blue"
+              description="All items in the system"
+            />
+          </>
+        ) : (
+          <>
+            <StatCard
+              title="Active Reports"
+              value={activeReports}
+              icon={Package}
+              color="blue"
+              description="Items currently reported lost"
+            />
+            <StatCard
+              title="Potential Matches"
+              value={potentialMatches}
+              icon={Search}
+              color="purple"
+              description="Found items matching your criteria"
+            />
+            <StatCard
+              title="Resolved Cases"
+              value={resolvedCases}
+              icon={CheckCircle}
+              color="green"
+              description="Items successfully returned"
+            />
+            <StatCard
+              title="Pending Claims"
+              value={pendingClaims}
+              icon={Clock}
+              color="orange"
+              description="Claims awaiting verification"
+            />
+          </>
+        )}
       </div>
 
       {/* Role-Based Content Area */}
@@ -92,9 +141,15 @@ export default function DashboardPage() {
               ? "Moderation Queue"
               : "Recent Activity"}
           </h2>
-          <Link href="/report-lost" className="text-sm text-blue-600 font-medium hover:underline">
-            + Report New Item
-          </Link>
+          {isMod ? (
+            <Link href="/dashboard/review-items" className="text-sm text-blue-600 font-medium hover:underline">
+              View All Pending Items
+            </Link>
+          ) : (
+            <Link href="/report-lost" className="text-sm text-blue-600 font-medium hover:underline">
+              + Report New Item
+            </Link>
+          )}
         </div>
 
         {loading ? (
@@ -133,6 +188,11 @@ export default function DashboardPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
+                  {isMod && (
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Approval
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -140,7 +200,7 @@ export default function DashboardPage() {
                   <tr key={item._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center text-lg">
+                        <div className="shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center text-lg">
                           {item.type === "Lost" ? "🎒" : "📦"}
                         </div>
                         <div className="ml-4">
@@ -183,6 +243,21 @@ export default function DashboardPage() {
                         {item.status}
                       </span>
                     </td>
+                    {isMod && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            item.approvalStatus === "Pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : item.approvalStatus === "Approved"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {item.approvalStatus || "Pending"}
+                        </span>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -200,6 +275,7 @@ function StatCard({ title, value, icon: Icon, color, description }) {
     purple: "bg-purple-50 text-purple-600",
     green: "bg-green-50 text-green-600",
     orange: "bg-orange-50 text-orange-600",
+    red: "bg-red-50 text-red-600",
   };
 
   return (

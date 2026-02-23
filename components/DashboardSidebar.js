@@ -34,12 +34,14 @@ export default function DashboardSidebar() {
   const roleLinks = {
     Admin: [
       { name: "User Management", href: "/dashboard/users", icon: Users },
+      { name: "Review Items", href: "/dashboard/review-items", icon: ShieldCheck },
+      { name: "Review Claims", href: "/dashboard/claims", icon: Flag },
       { name: "All Items", href: "/dashboard/items", icon: Package },
       { name: "Reports", href: "/dashboard/reports", icon: FileText },
     ],
     Moderator: [
-      { name: "Review Claims", href: "/dashboard/claims", icon: ShieldCheck },
-      { name: "Flagged Items", href: "/dashboard/flagged", icon: Flag },
+      { name: "Review Items", href: "/dashboard/review-items", icon: ShieldCheck },
+      { name: "Review Claims", href: "/dashboard/claims", icon: Flag },
     ],
     User: [
       { name: "My Lost Items", href: "/dashboard/my-lost", icon: Search },
