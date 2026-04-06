@@ -95,7 +95,7 @@ export default function Hero() {
               <div className="relative rounded-2xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                 <div className="relative rounded-xl overflow-hidden bg-white shadow-2xl ring-1 ring-gray-900/10">
                   <img
-                    src="https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=1000"
+                    src="/lost found.jpg"
                     alt="App Dashboard Preview"
                     className="w-full h-auto object-cover"
                   />

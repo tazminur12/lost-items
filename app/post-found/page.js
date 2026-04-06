@@ -8,8 +8,11 @@ import Swal from "sweetalert2";
 import Button from "@/components/Button";
 import { uploadToCloudinary } from "@/lib/upload";
 
+import { useSession } from "next-auth/react";
+
 export default function PostFound() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -82,7 +85,13 @@ export default function PostFound() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Failed to post found item");
+      
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("You must be logged in to post a found item.");
+        }
+        throw new Error(data?.message || "Failed to post found item");
+      }
 
       await Swal.fire({ icon: "success", title: "Posted", text: "Found item posted successfully.", timer: 1400, showConfirmButton: false });
       router.push("/dashboard");
@@ -219,7 +228,22 @@ export default function PostFound() {
             </div>
 
             <div className="pt-2">
-              <Button type="submit" className="w-full" disabled={submitting}>{submitting ? 'Posting...' : 'Post Found Item'}</Button>
+              {status === "authenticated" ? (
+                <Button type="submit" className="w-full" disabled={submitting}>
+                  {submitting ? 'Posting...' : 'Post Found Item'}
+                </Button>
+              ) : (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm text-center">
+                  You must be logged in to post an item.
+                  <button 
+                    type="button"
+                    className="ml-2 underline font-semibold cursor-pointer"
+                    onClick={() => router.push('/login?callbackUrl=/post-found')}
+                  >
+                    Login here
+                  </button>
+                </div>
+              )}
             </div>
           </form>
             </div>

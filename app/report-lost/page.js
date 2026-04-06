@@ -8,8 +8,11 @@ import { CheckCircle, Shield, Clock } from "lucide-react";
 import Button from "@/components/Button";
 import { uploadToCloudinary } from "@/lib/upload";
 
+import { useSession } from "next-auth/react";
+
 export default function ReportLost() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -87,6 +90,9 @@ export default function ReportLost() {
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("You must be logged in to submit a report.");
+        }
         throw new Error(data?.message || "Failed to submit report");
       }
 
@@ -283,9 +289,22 @@ export default function ReportLost() {
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" className="w-full" disabled={submitting}>
-                    {submitting ? "Submitting..." : "Submit Report"}
-                  </Button>
+                  {status === "authenticated" ? (
+                    <Button type="submit" className="w-full" disabled={submitting}>
+                      {submitting ? "Submitting..." : "Submit Report"}
+                    </Button>
+                  ) : (
+                    <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm text-center">
+                      You must be logged in to submit a report.
+                      <button 
+                        type="button"
+                        className="ml-2 underline font-semibold cursor-pointer"
+                        onClick={() => router.push('/login?callbackUrl=/report-lost')}
+                      >
+                        Login here
+                      </button>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>
