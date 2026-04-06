@@ -15,7 +15,7 @@ export default function DashboardPage() {
     async function fetchItems() {
       try {
         const isMod = role === "Moderator" || role === "Admin";
-        const url = isMod ? "/api/items?approval=all" : "/api/items";
+        const url = isMod ? "/api/items?approval=all" : "/api/items?mine=true";
         const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
@@ -46,10 +46,10 @@ export default function DashboardPage() {
   ).length;
 
   const activeReports = items.filter(
-    (item) => item.type === "Lost" && item.status === "Pending"
+    (item) => (item.type === "Lost" || item.type === "lost") && item.status === "Pending"
   ).length;
-  const potentialMatches = items.filter(
-    (item) => item.type === "Found" && item.status === "Pending"
+  const activeFinds = items.filter(
+    (item) => (item.type === "Found" || item.type === "found") && item.status === "Pending"
   ).length;
   const resolvedCases = items.filter((item) => item.status === "Resolved").length;
   const pendingClaims = items.filter((item) => item.status === "Claimed").length;
@@ -60,7 +60,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-500 mt-1">
-          Welcome back, {session?.user?.name}! Here's what's happening today.
+          Welcome back, {session?.user?.name}! Here&apos;s what&apos;s happening today.
         </p>
       </div>
 
@@ -100,32 +100,32 @@ export default function DashboardPage() {
         ) : (
           <>
             <StatCard
-              title="Active Reports"
+              title="Active Lost Reports"
               value={activeReports}
               icon={Package}
               color="blue"
-              description="Items currently reported lost"
+              description="Active items you reported lost"
             />
             <StatCard
-              title="Potential Matches"
-              value={potentialMatches}
+              title="Active Found Reports"
+              value={activeFinds}
               icon={Search}
               color="purple"
-              description="Found items matching your criteria"
+              description="Active found items you posted"
             />
             <StatCard
               title="Resolved Cases"
               value={resolvedCases}
               icon={CheckCircle}
               color="green"
-              description="Items successfully returned"
+              description="Your items successfully returned"
             />
             <StatCard
-              title="Pending Claims"
+              title="Items Claimed"
               value={pendingClaims}
               icon={Clock}
               color="orange"
-              description="Claims awaiting verification"
+              description="Your found items awaiting claim review"
             />
           </>
         )}
@@ -201,7 +201,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="shrink-0 h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center text-lg">
-                          {item.type === "Lost" ? "🎒" : "📦"}
+                          {(item.type === "Lost" || item.type === "lost") ? "🎒" : "📦"}
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          item.type === "Lost"
+                          (item.type === "Lost" || item.type === "lost")
                             ? "bg-red-100 text-red-800"
                             : "bg-blue-100 text-blue-800"
                         }`}
