@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// OOP: Schema class - Item data blueprint
+// OOP: Encapsulation - validates and protects item state
 const ItemSchema = new mongoose.Schema(
   {
     title: {
@@ -14,6 +16,7 @@ const ItemSchema = new mongoose.Schema(
     },
     type: {
       type: String,
+      // OOP: Polymorphism - "Lost" vs "Found" drives different workflows
       enum: ["Lost", "Found"],
       required: [true, "Please specify if the item is Lost or Found"],
     },
@@ -34,11 +37,13 @@ const ItemSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      // OOP: Polymorphism - status affects item processing
       enum: ["Pending", "Resolved", "Claimed"],
       default: "Pending",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - Item belongs to a User
       ref: "User",
       required: true,
     },
@@ -54,6 +59,7 @@ const ItemSchema = new mongoose.Schema(
     },
     approvalStatus: {
       type: String,
+      // OOP: Polymorphism - approval status determines visibility
       enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
     },
@@ -62,6 +68,7 @@ const ItemSchema = new mongoose.Schema(
     },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - links to moderator/admin User
       ref: "User",
     },
     approvedAt: {
@@ -71,4 +78,5 @@ const ItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// OOP: Inheritance - Item model inherits from Mongoose Model
 export default mongoose.models.Item || mongoose.model("Item", ItemSchema);

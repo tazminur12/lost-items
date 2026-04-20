@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 export default function HowItWorks() {
+  // OOP: Object literal - data structure for process steps
   const steps = [
     {
       id: "01",

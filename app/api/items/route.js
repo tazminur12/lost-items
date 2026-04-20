@@ -65,6 +65,7 @@ Location: ${location}`
       console.log("AI keyword extraction skipped:", aiErr.message);
     }
 
+    // OOP: Constructor - creates new Item instance using Model class
     const newItem = new Item({
       title,
       description,
@@ -160,6 +161,7 @@ export async function GET(req) {
 
 async function runAutoMatch(newItem, reporterId) {
   try {
+    // OOP: Polymorphism - behavior changes based on type value ("Lost" vs "Found")
     const oppositeType = newItem.type === "Lost" ? "Found" : "Lost";
 
     const candidates = await Item.find({
@@ -208,6 +210,7 @@ Return a JSON array: [{"index": number, "id": string, "score": number}]. Only in
     const matchedCandidate = candidates.find((c) => c._id.toString() === topMatch.id) || candidates[topMatch.index];
     if (!matchedCandidate) return;
 
+    // OOP: Factory method - Notification.create() constructs and saves instance
     await Notification.create({
       user: reporterId,
       title: "Potential Match Found!",
@@ -217,6 +220,7 @@ Return a JSON array: [{"index": number, "id": string, "score": number}]. Only in
     });
 
     if (matchedCandidate.user && matchedCandidate.user.toString() !== reporterId.toString()) {
+      // OOP: Factory method - another Notification instance creation
       await Notification.create({
         user: matchedCandidate.user,
         title: "Potential Match Found!",

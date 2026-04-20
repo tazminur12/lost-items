@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+// OOP: Schema class - User data blueprint
+// OOP: Encapsulation - validates and protects user data
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -10,6 +12,7 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Please provide an email"],
+      // OOP: Encapsulation - unique constraint prevents duplicates
       unique: true,
     },
     password: {
@@ -18,6 +21,7 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
+      // OOP: Polymorphism - role determines app behavior (User vs Admin vs Moderator)
       enum: ["User", "Admin", "Moderator"],
       default: "User",
     },
@@ -38,4 +42,5 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// OOP: Inheritance - User model inherits from Mongoose Model
 export default mongoose.models.User || mongoose.model("User", UserSchema);

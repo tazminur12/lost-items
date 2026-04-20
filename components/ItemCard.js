@@ -16,6 +16,7 @@ export default function ItemCard({ id, title, location, date, type, imageUrl }) 
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{title}</h3>
+          {/* OOP: Polymorphism - different styling based on type value */}
           <span className={`text-xs px-2 py-1 rounded-full uppercase font-bold ${type === 'lost' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
             {type === 'lost' ? 'Lost' : 'Found'}
           </span>

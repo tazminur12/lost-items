@@ -44,6 +44,7 @@ export async function POST(req) {
       );
     }
 
+    // OOP: Constructor - creates new Claim instance using Model class
     const claim = new Claim({
       item: itemId,
       claimant: userId,
@@ -53,6 +54,7 @@ export async function POST(req) {
 
     await claim.save();
 
+    // OOP: Factory method - Notification.create() creates and saves notification
     await Notification.create({
       user: item.user,
       title: "New Claim on Your Item",

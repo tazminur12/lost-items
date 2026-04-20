@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 
+// OOP: Schema class - Claim data blueprint
+// OOP: Encapsulation - validates and protects claim state
 const ClaimSchema = new mongoose.Schema(
   {
     item: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - Claim references an Item
       ref: "Item",
       required: true,
     },
     claimant: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - Claim references the User making the claim
       ref: "User",
       required: true,
     },
@@ -21,6 +25,7 @@ const ClaimSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      // OOP: Polymorphism - status determines claim processing workflow
       enum: ["Pending", "ModeratorApproved", "ModeratorRejected", "AdminApproved", "AdminRejected"],
       default: "Pending",
     },
@@ -29,6 +34,7 @@ const ClaimSchema = new mongoose.Schema(
     },
     moderatorBy: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - references moderator User
       ref: "User",
     },
     moderatorAt: {
@@ -39,6 +45,7 @@ const ClaimSchema = new mongoose.Schema(
     },
     adminBy: {
       type: mongoose.Schema.Types.ObjectId,
+      // OOP: Association - references admin User
       ref: "User",
     },
     adminAt: {
@@ -48,4 +55,5 @@ const ClaimSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// OOP: Inheritance - Claim model inherits from Mongoose Model
 export default mongoose.models.Claim || mongoose.model("Claim", ClaimSchema);

@@ -6,6 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
       <div className="container mx-auto px-4">
+        {/* OOP: Object literal - data structure for links */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Column */}
           <div className="space-y-4">

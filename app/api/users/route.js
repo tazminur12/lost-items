@@ -32,6 +32,7 @@ export async function GET(req) {
     }
 
     const users = await User.find(filter)
+      // OOP: Encapsulation - .select("-password") hides sensitive data from response
       .select("-password")
       .sort({ createdAt: -1 });
 
