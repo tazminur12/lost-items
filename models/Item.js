@@ -37,13 +37,12 @@ const ItemSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      // OOP: Polymorphism - status affects item processing
+      // OOP: Polymorphism - Akne Polymorphism Behiavior 
       enum: ["Pending", "Resolved", "Claimed"],
       default: "Pending",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      // OOP: Association - Item belongs to a User
       ref: "User",
       required: true,
     },
@@ -59,7 +58,7 @@ const ItemSchema = new mongoose.Schema(
     },
     approvalStatus: {
       type: String,
-      // OOP: Polymorphism - approval status determines visibility
+      // OOP: Polymorphism - akne Polymorphism Behavior
       enum: ["Pending", "Approved", "Rejected"],
       default: "Pending",
     },
