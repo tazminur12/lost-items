@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
@@ -16,7 +15,8 @@ export async function POST(req) {
 
     await connectDB();
 
-    const existingUser = await User.findOne({ email });
+    // OOP: Static method - using class-level helper to find user
+    const existingUser = await User.findByEmail(email);
 
     if (existingUser) {
       return NextResponse.json(
@@ -25,16 +25,16 @@ export async function POST(req) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // OOP: Constructor/Factory usage (creating a User model instance)
+    // OOP: Constructor - creates new User instance
+    // OOP: Encapsulation - password auto-hashed by pre-save middleware
     const newUser = new User({
       name,
       email,
-      password: hashedPassword,
+      password, // Will be hashed automatically in UserSchema.pre("save")
       role: "User", // Default role
     });
 
+    // OOP: Instance method - saves and triggers pre-save middleware
     await newUser.save();
 
     return NextResponse.json(

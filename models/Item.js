@@ -78,5 +78,45 @@ const ItemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// OOP: Instance method - encapsulates item approval logic
+ItemSchema.methods.approveItem = function (approverId, note) {
+  this.approvalStatus = "Approved";
+  this.approvedBy = approverId;
+  this.approvedAt = new Date();
+};
+
+// OOP: Instance method - encapsulates item rejection logic
+ItemSchema.methods.rejectItem = function (approverId, reason) {
+  this.approvalStatus = "Rejected";
+  this.approvedBy = approverId;
+  this.rejectionReason = reason;
+  this.approvedAt = new Date();
+};
+
+// OOP: Instance method - marks item as resolved/claimed
+ItemSchema.methods.markAsResolved = function () {
+  this.status = "Resolved";
+};
+
+// OOP: Instance method - marks item as claimed
+ItemSchema.methods.markAsClaimed = function () {
+  this.status = "Claimed";
+};
+
+// OOP: Abstraction - returns safe public item data
+ItemSchema.methods.getPublicItem = function () {
+  return {
+    id: this._id,
+    title: this.title,
+    description: this.description,
+    type: this.type,
+    category: this.category,
+    location: this.location,
+    date: this.date,
+    imageUrl: this.imageUrl,
+    status: this.status,
+  };
+};
+
 // OOP: Inheritance - Item model inherits from Mongoose Model
 export default mongoose.models.Item || mongoose.model("Item", ItemSchema);

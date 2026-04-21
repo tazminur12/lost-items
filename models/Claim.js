@@ -20,40 +20,80 @@ const ClaimSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please describe identifying features"],
     },
-    proofImageUrl: {
-      type: String,
-    },
+    proofImageUrl: String,
     status: {
       type: String,
       // OOP: Polymorphism - status determines claim processing workflow
-      enum: ["Pending", "ModeratorApproved", "ModeratorRejected", "AdminApproved", "AdminRejected"],
+      enum: [
+        "Pending",
+        "ModeratorApproved",
+        "ModeratorRejected",
+        "AdminApproved",
+        "AdminRejected",
+      ],
       default: "Pending",
     },
-    moderatorNote: {
-      type: String,
-    },
+    moderatorNote: String,
     moderatorBy: {
       type: mongoose.Schema.Types.ObjectId,
       // OOP: Association - references moderator User
       ref: "User",
     },
-    moderatorAt: {
-      type: Date,
-    },
-    adminNote: {
-      type: String,
-    },
+    moderatorAt: Date,
+    adminNote: String,
     adminBy: {
       type: mongoose.Schema.Types.ObjectId,
       // OOP: Association - references admin User
       ref: "User",
     },
-    adminAt: {
-      type: Date,
-    },
+    adminAt: Date,
   },
   { timestamps: true }
 );
 
+// OOP: Instance method - encapsulates moderator approval logic
+// Centralizes state change instead of scattering across API routes
+ClaimSchema.methods.approveByModerator = function (moderatorId, note) {
+  this.status = "ModeratorApproved";
+  this.moderatorBy = moderatorId;
+  this.moderatorNote = note;
+  this.moderatorAt = new Date();
+};
+
+// OOP: Instance method - encapsulates moderator rejection logic
+ClaimSchema.methods.rejectByModerator = function (moderatorId, note) {
+  this.status = "ModeratorRejected";
+  this.moderatorBy = moderatorId;
+  this.moderatorNote = note;
+  this.moderatorAt = new Date();
+};
+
+// OOP: Instance method - encapsulates admin approval logic
+ClaimSchema.methods.approveByAdmin = function (adminId, note) {
+  this.status = "AdminApproved";
+  this.adminBy = adminId;
+  this.adminNote = note;
+  this.adminAt = new Date();
+};
+
+// OOP: Instance method - encapsulates admin rejection logic
+ClaimSchema.methods.rejectByAdmin = function (adminId, note) {
+  this.status = "AdminRejected";
+  this.adminBy = adminId;
+  this.adminNote = note;
+  this.adminAt = new Date();
+};
+
+// OOP: Abstraction - returns safe public data without sensitive info
+ClaimSchema.methods.getPublicClaim = function () {
+  return {
+    id: this._id,
+    item: this.item,
+    status: this.status,
+    createdAt: this.createdAt,
+  };
+};
+
 // OOP: Inheritance - Claim model inherits from Mongoose Model
-export default mongoose.models.Claim || mongoose.model("Claim", ClaimSchema);
+export default mongoose.models.Claim ||
+  mongoose.model("Claim", ClaimSchema);

@@ -42,5 +42,32 @@ const NotificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// OOP: Instance method - marks notification as read
+NotificationSchema.methods.markAsRead = function () {
+  this.read = true;
+};
+
+// OOP: Instance method - checks if notification is unread
+NotificationSchema.methods.isUnread = function () {
+  return !this.read;
+};
+
+// OOP: Static method - gets unread count for user
+NotificationSchema.statics.getUnreadCount = function (userId) {
+  return this.countDocuments({ user: userId, read: false });
+};
+
+// OOP: Abstraction - returns safe notification data
+NotificationSchema.methods.getPublicNotification = function () {
+  return {
+    id: this._id,
+    title: this.title,
+    message: this.message,
+    type: this.type,
+    read: this.read,
+    createdAt: this.createdAt,
+  };
+};
+
 // OOP: Inheritance - Notification inherits Model methods (save, find, create, etc.)
 export default mongoose.models.Notification || mongoose.model("Notification", NotificationSchema);
